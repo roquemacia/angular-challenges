@@ -8,6 +8,8 @@ export class TodoService {
   private url = 'https://jsonplaceholder.typicode.com/todos';
 
   todoList = signal<Todo[]>([]);
+  loadingOrError = signal<boolean | string>(false);
+  disabledIds = signal<number[]>([]);
 
   constructor(private http: HttpClient, private loaderServ: LoaderService) {}
 
@@ -17,9 +19,11 @@ export class TodoService {
    *
    */
   getTodos() {
+    this.loadingOrError.set(true);
     const obs = this.http.get<Todo[]>(this.url);
     obs.subscribe((todos) => {
       this.todoList.set(todos);
+      this.loadingOrError.set(false);
     });
   }
 
@@ -29,6 +33,11 @@ export class TodoService {
    * @return void
    */
   updateTodo(todo: Todo) {
+    this.loadingOrError.set(true);
+    this.disabledIds.update((v) => {
+      v.push(todo.id);
+      return v;
+    });
     const body = JSON.stringify(todo);
     this.loaderServ.showLoader();
 
@@ -45,6 +54,11 @@ export class TodoService {
       const i = todos.findIndex((t) => t.id === todo.id);
       todos[i] = todo;
       this.todoList.set(todos);
+      this.loadingOrError.set(false);
+      this.disabledIds.update((v) => {
+        v.splice(v.indexOf(todo.id), 1);
+        return v;
+      });
     });
   }
 
@@ -54,13 +68,23 @@ export class TodoService {
    * @return void
    */
   delete(todo: Todo) {
+    this.loadingOrError.set(true);
+    this.disabledIds.update((v) => {
+      v.push(todo.id);
+      return v;
+    });
     this.loaderServ.showLoader();
-    const obs = this.http.delete<Todo>(`${this.url}/${todo.id}`);
+    const obs = this.http.delete<Todo>(`${this.url}/${todo.id}`, {});
     obs.subscribe(() => {
       const todos = this.todoList();
       const i = todos.findIndex((t) => t.id === todo.id);
       todos.splice(i, 1);
       this.todoList.set(todos);
+      this.loadingOrError.set(false);
+      this.disabledIds.update((v) => {
+        v.splice(v.indexOf(todo.id), 1);
+        return v;
+      });
     });
   }
 }

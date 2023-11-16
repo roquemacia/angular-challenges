@@ -11,11 +11,19 @@ import { TodoService } from '../services/todo.service';
   imports: [CommonModule, MatProgressSpinnerModule],
   selector: 'app-root',
   template: `
-    <mat-spinner *ngIf="loaderServ.isLoading()"></mat-spinner>
+    <mat-spinner *ngIf="todoServ.loadingOrError() === true"></mat-spinner>
     <div *ngFor="let todo of todoServ.todoList()">
       {{ todo.title }}
-      <button (click)="update(todo)">Update</button>
-      <button (click)="delete(todo)">Delete</button>
+      <button
+        (click)="update(todo)"
+        [disabled]="todoServ.disabledIds().includes(todo.id)">
+        Update
+      </button>
+      <button
+        (click)="delete(todo)"
+        [disabled]="todoServ.disabledIds().includes(todo.id)">
+        Delete
+      </button>
     </div>
   `,
   styles: [],
