@@ -40,10 +40,10 @@ export class TodoService {
       headers: headers,
     });
 
-    obs.subscribe((todoUpdated) => {
+    obs.subscribe(() => {
       const todos = this.todoList();
-      const i = todos.findIndex((t) => t.id === todoUpdated.id);
-      todos[i] = todoUpdated;
+      const i = todos.findIndex((t) => t.id === todo.id);
+      todos[i] = todo;
       this.todoList.set(todos);
     });
   }
