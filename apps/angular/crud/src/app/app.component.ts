@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 import { randText } from '@ngneat/falso';
 import { BehaviorSubject } from 'rxjs';
 import { Todo } from '../model/todo.model';
-import { TodoService } from '../services/Todo.service';
+import { TodoService } from '../services/todo.service';
 
 @Component({
   standalone: true,
   imports: [CommonModule],
   selector: 'app-root',
   template: `
-    <div *ngFor="let todo of todoServ.todoList | async">
+    <div *ngFor="let todo of todoServ.todoList()">
       {{ todo.title }}
       <button (click)="update(todo)">Update</button>
       <button (click)="delete(todo)">Delete</button>

@@ -1,15 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 import { Todo } from '../model/todo.model';
+import { LoaderService } from './loader.service';
 
 @Injectable({ providedIn: 'root' })
 export class TodoService {
   private url = 'https://jsonplaceholder.typicode.com/todos';
 
-  todoList = new BehaviorSubject<Todo[]>([]);
+  todoList = signal<Todo[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private loaderServ: LoaderService) {}
 
   /**
    * Gets the list of todos from the API, updating the todoList BehaviorSubject
@@ -19,7 +19,7 @@ export class TodoService {
   getTodos() {
     const obs = this.http.get<Todo[]>(this.url);
     obs.subscribe((todos) => {
-      this.todoList.next(todos);
+      this.todoList.set(todos);
     });
   }
 
@@ -40,10 +40,10 @@ export class TodoService {
     });
 
     obs.subscribe((todoUpdated) => {
-      const todos = this.todoList.getValue();
+      const todos = this.todoList();
       const i = todos.findIndex((t) => t.id === todoUpdated.id);
       todos[i] = todoUpdated;
-      this.todoList.next(todos);
+      this.todoList.set(todos);
     });
   }
 
@@ -55,10 +55,10 @@ export class TodoService {
   delete(todo: Todo) {
     const obs = this.http.delete<Todo>(`${this.url}/${todo.id}`);
     obs.subscribe(() => {
-      const todos = this.todoList.getValue();
+      const todos = this.todoList();
       const i = todos.findIndex((t) => t.id === todo.id);
       todos.splice(i, 1);
-      this.todoList.next(todos);
+      this.todoList.set(todos);
     });
   }
 }
