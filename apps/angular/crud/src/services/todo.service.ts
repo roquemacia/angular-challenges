@@ -46,4 +46,19 @@ export class TodoService {
       this.todoList.next(todos);
     });
   }
+
+  /**
+   * Deletes the todo, and returns the updated list of todos
+   * @param todo
+   * @return void
+   */
+  delete(todo: Todo) {
+    const obs = this.http.delete<Todo>(`${this.url}/${todo.id}`);
+    obs.subscribe(() => {
+      const todos = this.todoList.getValue();
+      const i = todos.findIndex((t) => t.id === todo.id);
+      todos.splice(i, 1);
+      this.todoList.next(todos);
+    });
+  }
 }

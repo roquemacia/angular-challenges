@@ -13,6 +13,7 @@ import { TodoService } from '../services/Todo.service';
     <div *ngFor="let todo of todoServ.todoList | async">
       {{ todo.title }}
       <button (click)="update(todo)">Update</button>
+      <button (click)="delete(todo)">Delete</button>
     </div>
   `,
   styles: [],
@@ -30,5 +31,9 @@ export class AppComponent implements OnInit {
       ...todo,
       title: randText(),
     });
+  }
+
+  delete(todo: Todo) {
+    this.todoServ.delete(todo);
   }
 }
