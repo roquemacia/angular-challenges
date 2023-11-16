@@ -17,6 +17,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       finalize(() => {
+        this.loaderServ.hideLoader();
         console.log('Request completed');
       }),
       catchError((err) => {

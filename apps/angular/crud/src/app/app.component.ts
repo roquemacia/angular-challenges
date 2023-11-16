@@ -1,15 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { randText } from '@ngneat/falso';
-import { BehaviorSubject } from 'rxjs';
 import { Todo } from '../model/todo.model';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderService } from '../services/loader.service';
 import { TodoService } from '../services/todo.service';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatProgressSpinnerModule],
   selector: 'app-root',
   template: `
+    <mat-spinner *ngIf="loaderServ.isLoading()"></mat-spinner>
     <div *ngFor="let todo of todoServ.todoList()">
       {{ todo.title }}
       <button (click)="update(todo)">Update</button>
@@ -20,7 +22,10 @@ import { TodoService } from '../services/todo.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  constructor(protected todoServ: TodoService) {}
+  constructor(
+    protected todoServ: TodoService,
+    protected loaderServ: LoaderService
+  ) {}
 
   ngOnInit(): void {
     this.todoServ.getTodos();

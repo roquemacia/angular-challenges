@@ -30,6 +30,7 @@ export class TodoService {
    */
   updateTodo(todo: Todo) {
     const body = JSON.stringify(todo);
+    this.loaderServ.showLoader();
 
     const headers = {
       'Content-type': 'application/json; charset=UTF-8',
@@ -53,6 +54,7 @@ export class TodoService {
    * @return void
    */
   delete(todo: Todo) {
+    this.loaderServ.showLoader();
     const obs = this.http.delete<Todo>(`${this.url}/${todo.id}`);
     obs.subscribe(() => {
       const todos = this.todoList();
